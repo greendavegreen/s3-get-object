@@ -1,0 +1,22 @@
+aws s3 mb s3://s3test.worky
+
+aws cloudformation package --template-file template.yaml \
+--output-template-file serverless-output.yaml \
+--s3-bucket s3test.worky
+
+aws cloudformation deploy --template-file serverless-output.yaml \
+--stack-name s3-demo   --capabilities CAPABILITY_IAM
+
+aws cloudformation validate-template --template-body file://serverless-output.yaml
+
+# show stacks that exist
+aws cloudformation list-stacks --stack-status-filter CREATE_COMPLETE UPDATE_COMPLETE
+
+# what was created by the stack
+aws cloudformation list-stack-resources --stack-name s3-demo
+
+aws cloudformation delete-stack --stack-name new-stack-name
+
+
+use to set env Variables
+    !Ref MyEC2Instance

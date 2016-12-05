@@ -1,0 +1,48 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+Description: >-
+  An lambda function that pics up items that arrive in Bucket1 and copies them to Bucket2.
+Resources:
+  # Bucket1 is watched for new arrivals, Bucket2 is only written to by Lambda copier
+  Bucket1:
+    Type: 'AWS::S3::Bucket'
+  Bucket2:
+    Type: 'AWS::S3::Bucket'
+
+  s3getobjectpython:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      Handler: lambda_function.lambda_handler
+      Runtime: python2.7
+      CodeUri: deploy-dir
+      Description: >-
+        An lambda function that pics up items that arrive in Bucket1 and copies them to Bucket2.
+      MemorySize: 128
+      Timeout: 3
+      Events:
+        BucketEvent1:
+          Type: S3
+          Properties:
+            Bucket:
+              Ref: Bucket1
+            Events:
+              - 's3:ObjectCreated:*'
+      Environment:
+        Variables:
+          S3_BUCKET: !Ref Bucket2
+      Policies:
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - s3:GetObject
+              Resource: arn:aws:s3:::*
+            - Effect: Allow
+              Action:
+                - s3:PutObject
+              Resource:
+                - Fn::Join:
+                  - ''
+                  - - 'arn:aws:s3:::'
+                    - Ref: Bucket2
+                    - "/*"

@@ -1,13 +1,13 @@
 aws s3 mb s3://s3test.worky
 
 aws cloudformation package --template-file template.yaml \
---output-template-file serverless-output.yaml \
+--output-template-file output-template.yaml \
 --s3-bucket s3test.worky
 
-aws cloudformation deploy --template-file serverless-output.yaml \
+aws cloudformation deploy --template-file output-template.yaml \
 --stack-name s3-demo   --capabilities CAPABILITY_IAM
 
-aws cloudformation validate-template --template-body file://serverless-output.yaml
+aws cloudformation validate-template --template-body file://output-template.yaml
 
 # show stacks that exist
 aws cloudformation list-stacks --stack-status-filter CREATE_COMPLETE UPDATE_COMPLETE
